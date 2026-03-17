@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shotgun
   fireRate: 1
-  damage: 1
+  damage: 10
   magazineSize: 8
   reloadTime: 3
   recoilOffset: {x: 0, y: 0, z: -0.5}
@@ -164,6 +164,9 @@ MonoBehaviour:
   spread: 6
   muzzle: {fileID: 7810499870653795661}
   bulletTrailPrefab: {fileID: 8147872603486726248, guid: de1ab97d4e476134fb5e83bddd14bd5d, type: 3}
+  reloadAngle: -45
+  reloadDuration: 3
+  isReloading: 0
 --- !u!1001 &5401259046310801131
 PrefabInstance:
   m_ObjectHideFlags: 0

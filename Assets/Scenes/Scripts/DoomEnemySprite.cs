@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class DoomEnemySprite : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class DoomEnemySprite : MonoBehaviour
     public Sprite[] right;
     public Sprite[] backRight;
     public Sprite[] back;
+    public Sprite[] frontHit;
+    public Sprite[] backHit;
+    public Sprite[] rightHit;
 
     private SpriteRenderer sr;
 
@@ -67,5 +71,42 @@ public class DoomEnemySprite : MonoBehaviour
             
             animator.SetFrames(frontRight);
         }
+    }
+
+    public void ShowHitDirection(Vector3 localHitDir)
+    {
+        float angle = Mathf.Atan2(localHitDir.x, localHitDir.z) * Mathf.Rad2Deg;
+        angle = (angle + 360f) % 360f;
+
+        Sprite[] hitFrames = null;
+        bool flip = false;
+
+        if (angle >= 315 || angle < 45)
+            hitFrames = frontHit;
+        else if (angle >= 45 && angle < 135)
+            hitFrames = rightHit;
+        else if (angle >= 135 && angle < 225)
+            hitFrames = backHit;
+        else
+        {
+            hitFrames = rightHit;
+            flip = true;
+        }
+
+        sr.flipX = flip;
+
+        if (hitFrames != null && hitFrames.Length > 0)
+            StartCoroutine(PlayHitFrames(hitFrames));
+    }
+
+    private IEnumerator PlayHitFrames(Sprite[] hitFrames)
+    {
+        // Temporarily override animation
+        animator.SetFrames(hitFrames);
+
+        // Wait the total duration
+        yield return new WaitForSeconds(hitFrames.Length * animator.fps);
+
+        // Restore normal idle animation
     }
 }

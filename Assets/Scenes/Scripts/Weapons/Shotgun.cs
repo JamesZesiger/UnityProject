@@ -39,6 +39,12 @@ public class Shotgun : HitscanGun
             {
                 hitPoint = hit.point;
                 Debug.Log("Shotgun hit " + hit.collider.name);
+
+                EnemyHealth health = hit.collider.GetComponentInParent<EnemyHealth>();
+                if (health != null)
+                {
+                    health.TakeDamage(damage, hitPoint);
+                }
             }
 
             // Spawn trail from muzzle to hit point
