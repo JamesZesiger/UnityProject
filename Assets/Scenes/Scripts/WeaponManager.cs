@@ -5,7 +5,9 @@ public class WeaponManager : MonoBehaviour
     [SerializeField] Transform weaponHolder;
     
     [SerializeField] GameObject startingWeapon;
+    [SerializeField] GameObject[] Weapons;
     Gun currentGun;
+    private int currentIndex = 0;
     public PlayerHUD playerHUD;
 
 
@@ -42,4 +44,17 @@ public class WeaponManager : MonoBehaviour
     {
         Equip(startingWeapon);
     }
+
+    public void CycleWeapon()
+    {
+        if (Weapons.Length == 0) return;
+
+        currentIndex++;
+
+        if (currentIndex >= Weapons.Length)
+            currentIndex = 0;
+
+        Equip(Weapons[currentIndex]);
+    }
+
 }

@@ -72,9 +72,15 @@ public class ImpAI : MonoBehaviour
         if (Time.time >= nextAttackTime)
         {
             nextAttackTime = Time.time + attackCooldown;
+
             Debug.Log("Imp attacks for " + damage + " damage!");
 
-            // You can add damage logic here, e.g., player.GetComponent<Health>().TakeDamage(damage);
+            PlayerHealth health = player.GetComponent<PlayerHealth>();
+
+            if (health != null)
+            {
+                health.TakeDamage(damage);
+            }
         }
     }
 

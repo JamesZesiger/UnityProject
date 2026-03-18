@@ -1,11 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
-public class Shotgun : HitscanGun
+public class Rifle : HitscanGun
 {
-    public int pellets = 8;
-    public float spread = 6f;
-
     [Header("Visuals")]
     public Transform muzzle; // assign via prefab
     public GameObject bulletTrailPrefab; // assign prefab
@@ -14,7 +11,7 @@ public class Shotgun : HitscanGun
     public float reloadAngle = -45f;      // rotate gun by 45 degrees
     public float reloadDuration = 3f;    // how long reload lasts
     private Quaternion _initialRotation;
-    public bool isReloading=false;
+    public bool isReloading = false;
 
     public AudioClip shot;
     public AudioClip hitSound;
@@ -23,7 +20,7 @@ public class Shotgun : HitscanGun
     {
         base.Awake();
         _initialRotation = transform.localRotation;
-        if(cam == null)
+        if (cam == null)
             cam = Camera.main;
     }
 
@@ -31,48 +28,45 @@ public class Shotgun : HitscanGun
     {
         if (isReloading) return;
         audioSource.PlayOneShot(shot, 1.0f);
-        for(int i = 0; i < pellets; i++)
+        Vector3 dir = cam.transform.forward;
+        dir.Normalize();
+
+        Vector3 hitPoint = cam.transform.position + dir * range;
+
+        if (Physics.Raycast(cam.transform.position, dir, out RaycastHit hit, range))
         {
-            Vector3 dir = cam.transform.forward;
-            dir += Random.insideUnitSphere * spread * 0.01f;
-            dir.Normalize();
+            hitPoint = hit.point;
 
-            Vector3 hitPoint = cam.transform.position + dir * range;
-
-            if (Physics.Raycast(cam.transform.position, dir, out RaycastHit hit, range))
+            Debug.Log("Rife hit " + hit.collider.name);
+            audioSource.PlayOneShot(hitSound, 1.0f);
+            EnemyHealth health = hit.collider.GetComponentInParent<EnemyHealth>();
+            if (health != null)
             {
-                hitPoint = hit.point;
-
-                Debug.Log("Shotgun hit " + hit.collider.name);
-                audioSource.PlayOneShot(hitSound, 1.0f);
-                EnemyHealth health = hit.collider.GetComponentInParent<EnemyHealth>();
-                if (health != null)
-                {
-                    health.TakeDamage(damage, hitPoint);
-                }
-            }
-
-            // Spawn trail from muzzle to hit point
-            if(bulletTrailPrefab != null && muzzle != null)
-            {
-                GameObject trail = Instantiate(bulletTrailPrefab, muzzle.position, Quaternion.identity);
-                StartCoroutine(AnimateTrail(trail, muzzle.position, hitPoint));
+                health.TakeDamage(damage, hitPoint);
             }
         }
+
+        // Spawn trail from muzzle to hit point
+        if (bulletTrailPrefab != null && muzzle != null)
+        {
+            GameObject trail = Instantiate(bulletTrailPrefab, muzzle.position, Quaternion.identity);
+            StartCoroutine(AnimateTrail(trail, muzzle.position, hitPoint));
+        }
+        
     }
 
     private System.Collections.IEnumerator AnimateTrail(GameObject trailObj, Vector3 start, Vector3 end)
     {
         float duration = 0.25f;
         float t = 0f;
-        while(t < duration)
+        while (t < duration)
         {
             t += Time.deltaTime;
-            if(trailObj != null)
+            if (trailObj != null)
                 trailObj.transform.position = Vector3.Lerp(start, end, t / duration);
             yield return null;
         }
-        if(trailObj != null) Destroy(trailObj);
+        if (trailObj != null) Destroy(trailObj);
     }
 
 
@@ -92,8 +86,8 @@ public class Shotgun : HitscanGun
         float holdTime = reloadDuration * 0.7f; // 70% of duration hold
         float snapTime = 0.1f; // time to snap back
 
-        
-        while(Quaternion.Angle(transform.localRotation, sideRotation) > 0.1f)
+
+        while (Quaternion.Angle(transform.localRotation, sideRotation) > 0.1f)
         {
             transform.localRotation = Quaternion.RotateTowards(transform.localRotation, sideRotation, rotateSpeed * 360f * Time.deltaTime);
             yield return null;
@@ -102,7 +96,7 @@ public class Shotgun : HitscanGun
         yield return new WaitForSeconds(holdTime);
 
         float elapsed = 0f;
-        while(elapsed < snapTime)
+        while (elapsed < snapTime)
         {
             transform.localRotation = Quaternion.Slerp(sideRotation, _initialRotation, elapsed / snapTime);
             elapsed += Time.deltaTime;
@@ -116,7 +110,18 @@ public class Shotgun : HitscanGun
     }
     public override void TryFire()
     {
-        if (isReloading) return; // prevent firing while reloading
-        base.TryFire();
+        if (Time.time < nextFireTime) return;
+        if (currentAmmo <= 0) 
+        {
+            Reload();
+            return;
+        }
+
+        Fire();
+        
+        transform.localPosition += recoilOffset;
+        currentAmmo--;
+
+        nextFireTime = Time.time + 1f / fireRate;
     }
 }

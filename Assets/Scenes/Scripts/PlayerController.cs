@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour
 
     bool isSprinting;
     bool isGrounded;
+    private bool isFiring;
 
     float cameraXRotation;
 
@@ -51,6 +52,9 @@ public class PlayerController : MonoBehaviour
         HandleMovement();
         ApplyGravity();
         HandleLook();
+        if (isFiring)
+            weaponManager.Fire();
+        
     }
 
     void GroundCheck()
@@ -136,13 +140,18 @@ public class PlayerController : MonoBehaviour
 
     void OnAttack(InputValue value)
     {
-        if (value.isPressed)
-            weaponManager.Fire();
-        
+        isFiring = value.isPressed;  
+
     }
     void OnReload(InputValue value)
     {
         if (value.isPressed)
             weaponManager.Reload();
+    }
+
+    void OnNext(InputValue value)
+    {
+        if (value.isPressed)
+            weaponManager.CycleWeapon();
     }
 }

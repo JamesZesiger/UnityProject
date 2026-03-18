@@ -1006,7 +1006,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponManager
   weaponHolder: {fileID: 475959662}
-  startingWeapon: {fileID: 4205521026231025682, guid: f7a69565ab2ff984789da792b0969f4b, type: 3}
+  startingWeapon: {fileID: 3733985904492820756, guid: fb03615f7d6c5ed44bb3aa32eb2da79a, type: 3}
   playerHUD: {fileID: 125466931}
 --- !u!1 &1357040829
 GameObject:
@@ -1462,14 +1462,6 @@ PrefabInstance:
     - target: {fileID: 3963952591976567550, guid: 5aea90b15cdd26d43941dacae3443913, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5015843345762740751, guid: 5aea90b15cdd26d43941dacae3443913, type: 3}
-      propertyPath: m_Height
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5015843345762740751, guid: 5aea90b15cdd26d43941dacae3443913, type: 3}
-      propertyPath: m_Radius
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
