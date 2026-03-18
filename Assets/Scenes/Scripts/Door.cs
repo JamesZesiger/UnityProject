@@ -1,12 +1,11 @@
 using UnityEngine;
 
-public class Door : MonoBehaviour
+public class Door : InteractableObject
 {
     [Header("Settings")]
     public float speed = 5f;
     public float moveDistance = 5f;
     private bool isOpen = false;
-    private bool isClosing = false;
     private bool isMoving = false;
     private Vector3 startPosition;
 
@@ -15,52 +14,50 @@ public class Door : MonoBehaviour
         startPosition = transform.position;
     }
 
-    void Interact()
+    private void Update() 
+    {
+        if (isOpen && isMoving)
+            MoveDoor(startPosition.y, false); 
+        if (!isOpen && isMoving)
+            MoveDoor(startPosition.y + moveDistance, true);
+
+    }
+    protected override void Interact()
     {
         if (isOpen)
         {
-            close();
+            isMoving = true;  
         }
         else if (!isOpen)
         {
-            open();
+            isMoving = true;  
         }
     }
 
-    void open()
+    void MoveDoor(float targetY, bool openState)
     {
-        isMoving = true;
-        float remaining = moveDistance - (transform.position.y - startPosition.y);
+        float newY = Mathf.MoveTowards(
+            transform.position.y,
+            targetY,
+            speed * Time.deltaTime
+        );
 
-        if (remaining > 0f)
-        {
-            // Move up by speed * deltaTime, but not beyond the target
-            float step = Mathf.Min(moveSpeed * Time.deltaTime, remaining);
-            transform.Translate(Vector3.up * step, Space.World);
-        }
-        else
-        {
-            // Stop movement when target reached
-            isMoving = false;
-            isOpen = true;
-        }
-    }
+        transform.position = new Vector3(
+            transform.position.x,
+            newY,
+            transform.position.z
+        );
 
-    void close()
-    {
-        isMoving = true;
-        float remaining = moveDistance - (startPosition.y - transform.position.y);
-        if (remaining > 0f)
+        if (Mathf.Approximately(transform.position.y, targetY))
         {
-            // Move up by speed * deltaTime, but not beyond the target
-            float step = Mathf.Min(moveSpeed * Time.deltaTime, remaining);
-            transform.Translate(Vector3.down * step, Space.World);
-        }
-        else
-        {
-            // Stop movement when target reached
+            transform.position = new Vector3(
+                transform.position.x,
+                targetY,
+                transform.position.z
+            );
+
             isMoving = false;
-            isOpen = true;
+            isOpen = openState;
         }
     }
 

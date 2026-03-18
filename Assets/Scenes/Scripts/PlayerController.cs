@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
     private bool isFiring;
 
     float cameraXRotation;
-
+    public Camera cam;
     void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -167,8 +167,9 @@ public class PlayerController : MonoBehaviour
 
             if (Physics.Raycast(ray, out RaycastHit hit, 3f))
             {
-                targetObject = hit.collider;
-                targetObjrct.Interact();
+                InteractableObject targetObject = hit.collider.GetComponentInParent<InteractableObject>();
+                targetObject.TryInteract();
+                Debug.Log("Interacted with:" + targetObject);
             }
         }
     }
