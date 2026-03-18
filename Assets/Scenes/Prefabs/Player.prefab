@@ -327,8 +327,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   cameraPivot: {fileID: 6373515455662834651}
-  walkSpeed: 3
-  sprintSpeed: 9
+  walkSpeed: 10
+  sprintSpeed: 20
   acceleration: 10
   jumpHeight: 1.8
   gravity: -20
@@ -337,6 +337,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 8
+  cam: {fileID: 0}
   weaponManager: {fileID: 3196315591175817941}
 --- !u!114 &4453171029856064295
 MonoBehaviour:

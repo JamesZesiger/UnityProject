@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5015843345762740751}
   - component: {fileID: 602764411587385246}
   - component: {fileID: 8124155472643695057}
+  - component: {fileID: 3760760924950037660}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -54,8 +55,8 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.205
-  m_Height: 0.57
+  m_Radius: 1
+  m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &602764411587385246
@@ -71,16 +72,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ImpAI
   player: {fileID: 0}
-  moveSpeed: 3
   chaseDistance: 10
   stopDistance: 1.5
   attackCooldown: 1.5
   damage: 10
-  visual: {fileID: 0}
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}
-  patrolSpeed: 2
 --- !u!114 &8124155472643695057
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93,8 +91,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dae9f328fa462fb42a940d269449040d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHealth: 50
+  maxHealth: 30
   sprite: {fileID: 0}
+--- !u!195 &3760760924950037660
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2150457663538065056}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 0
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 1
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &3846009468566348078
 GameObject:
   m_ObjectHideFlags: 0

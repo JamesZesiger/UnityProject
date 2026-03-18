@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.AI;
 
-public class ImpAI : MonoBehaviour
+public class ImpAI_NavMesh : MonoBehaviour
 {
-    [Header("Target & Movement")]
+    [Header("Target")]
     public Transform player;
-    public float moveSpeed = 3f;
+
+    [Header("Ranges")]
     public float chaseDistance = 10f;
     public float stopDistance = 1.5f;
 
@@ -13,57 +15,37 @@ public class ImpAI : MonoBehaviour
     public int damage = 10;
     private float nextAttackTime;
 
-    [Header("Components")]
-    public Transform visual; // Visual child
-    private Rigidbody rb; // optional if you use physics
-
     [Header("Patrol")]
-    public Transform[] patrolPoints; // assign in inspector
-    public float patrolSpeed = 2f;
+    public Transform[] patrolPoints;
     private int currentPatrolIndex = 0;
-    private bool patrolForward = true;
 
+    private NavMeshAgent agent;
 
     void Awake()
     {
         if (player == null)
             player = Camera.main.transform;
 
-        rb = GetComponent<Rigidbody>();
-        if (rb != null)
-            rb.isKinematic = true;
+        agent = GetComponent<NavMeshAgent>();
     }
 
     void Update()
     {
-        Vector3 dir = player.position - transform.position;
-        dir.y = 0;
-        float distance = dir.magnitude;
+        float distance = Vector3.Distance(transform.position, player.position);
 
-        Vector3 moveDir = Vector3.zero; // direction we will move this frame
-
-        if (distance <= chaseDistance && distance > stopDistance)
+        if (distance <= chaseDistance)
         {
-            // Chase player
-            moveDir = dir.normalized;
-            transform.position += moveDir * moveSpeed * Time.deltaTime;
+            agent.SetDestination(player.position);
+
+            if (distance <= stopDistance)
+            {
+                agent.ResetPath();
+                TryAttack();
+            }
         }
-        else if (distance > chaseDistance)
+        else
         {
-            // Patrol
-            moveDir = GetPatrolDirection();
-            transform.position += moveDir * patrolSpeed * Time.deltaTime;
-        }
-
-        if (distance <= stopDistance)
-        {
-            TryAttack();
-        }
-
-        // Rotate root toward movement direction only
-        if (moveDir.sqrMagnitude > 0.001f)
-        {
-            transform.forward = moveDir;
+            Patrol();
         }
     }
 
@@ -76,96 +58,20 @@ public class ImpAI : MonoBehaviour
             Debug.Log("Imp attacks for " + damage + " damage!");
 
             PlayerHealth health = player.GetComponent<PlayerHealth>();
-
             if (health != null)
-            {
                 health.TakeDamage(damage);
-            }
         }
-    }
-
-    Vector3 GetPatrolDirection()
-    {
-        if (patrolPoints == null || patrolPoints.Length == 0)
-            return Vector3.zero;
-
-        Transform targetPoint = patrolPoints[currentPatrolIndex];
-        Vector3 dir = targetPoint.position - transform.position;
-        dir.y = 0;
-
-        // Check if reached current patrol point
-        float distanceToPoint = dir.magnitude;
-        if (distanceToPoint < 0.2f) // small threshold
-        {
-            // Advance to next node
-            if (patrolForward)
-            {
-                currentPatrolIndex++;
-                if (currentPatrolIndex >= patrolPoints.Length)
-                {
-                    currentPatrolIndex = patrolPoints.Length - 2;
-                    patrolForward = false;
-                }
-            }
-            else
-            {
-                currentPatrolIndex--;
-                if (currentPatrolIndex < 0)
-                {
-                    currentPatrolIndex = 1;
-                    patrolForward = true;
-                }
-            }
-
-            targetPoint = patrolPoints[currentPatrolIndex];
-            dir = targetPoint.position - transform.position;
-            dir.y = 0;
-        }
-
-        if (dir.sqrMagnitude < 0.001f)
-            return Vector3.zero;
-
-        return dir.normalized;
     }
 
     void Patrol()
     {
-        if (patrolPoints == null || patrolPoints.Length == 0) return;
+        if (patrolPoints == null || patrolPoints.Length == 0)
+            return;
 
-        Transform targetPoint = patrolPoints[currentPatrolIndex];
-        Vector3 dir = targetPoint.position - transform.position;
-        dir.y = 0;
-
-        // Move toward patrol point
-        transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, patrolSpeed * Time.deltaTime);
-
-        // Rotate root to face patrol direction
-        if (dir.sqrMagnitude > 0.01f)
-            transform.forward = dir.normalized;
-
-        // Check if reached point
-        if (Vector3.Distance(transform.position, targetPoint.position) < 0.1f)
+        if (!agent.pathPending && agent.remainingDistance < 0.5f)
         {
-            // Move to next point
-            if (patrolForward)
-            {
-                currentPatrolIndex++;
-                if (currentPatrolIndex >= patrolPoints.Length)
-                {
-                    currentPatrolIndex = patrolPoints.Length - 2;
-                    patrolForward = false;
-                }
-            }
-            else
-            {
-                currentPatrolIndex--;
-                if (currentPatrolIndex < 0)
-                {
-                    currentPatrolIndex = 1;
-                    patrolForward = true;
-                }
-            }
+            currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
+            agent.SetDestination(patrolPoints[currentPatrolIndex].position);
         }
     }
-
 }
