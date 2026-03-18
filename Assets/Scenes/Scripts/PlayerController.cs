@@ -44,6 +44,8 @@ public class PlayerController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        cam = Camera.main;
     }
 
     void Update()
@@ -153,5 +155,21 @@ public class PlayerController : MonoBehaviour
     {
         if (value.isPressed)
             weaponManager.CycleWeapon();
+    }
+
+    void OnInteract(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+
+            Vector3 hitPoint = ray.origin + ray.direction * 3f;
+
+            if (Physics.Raycast(ray, out RaycastHit hit, 3f))
+            {
+                targetObject = hit.collider;
+                targetObjrct.Interact();
+            }
+        }
     }
 }
