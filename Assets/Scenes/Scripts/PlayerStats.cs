@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
+    public PlayerHealth hpComponent;
     public int maxHealth = 100;
     public int maxAmmo = 200;
     public int maxArmor = 100;
@@ -12,9 +13,9 @@ public class PlayerStats : MonoBehaviour
 
     public bool AddHealth(int amount)
     {
-        if (health >= maxHealth) return false;
+        if (hpComponent.getCurHp() >= maxHealth) return false;
 
-        health = Mathf.Min(health + amount, maxHealth);
+        hpComponent.TakeDamage(-amount);
         Debug.Log("Picked up health: " + amount);
         return true;
     }

@@ -36,7 +36,7 @@ public class Rifle : HitscanGun
         {
             hitPoint = hit.point;
 
-            Debug.Log("Rife hit " + hit.collider.name);
+            Debug.Log("Rife hit " + hit.collider.gameObject.name);
             EnemyHealth health = hit.collider.GetComponentInParent<EnemyHealth>();
             if (health != null)
             {

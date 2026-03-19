@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2607496017674080129}
   - component: {fileID: 4165587436110904549}
   m_Layer: 7
-  m_Name: Enemy
+  m_Name: Imp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -248,7 +248,8 @@ MonoBehaviour:
   animator: {fileID: 8192651380231574027}
   firePoint: {fileID: 2498372372111408007}
   spriteAnimator: {fileID: 6789723813792427735}
-  detectionDistance: 20
+  enemyHealth: {fileID: 0}
+  detectionDistance: 50
   visionAngle: 360
   aggroMemoryTime: 5
   obstacleMask:
@@ -260,7 +261,7 @@ MonoBehaviour:
   attackCooldown: 2
   meleeDamage: 15
   projectilePrefab: {fileID: 3329734483028138284, guid: c114aee2a3f41b6429a178b0ee992304, type: 3}
-  projectileSpeed: 10
+  projectileSpeed: 30
   strafeRadius: 3
   strafeInterval: 2
 --- !u!114 &4165587436110904549

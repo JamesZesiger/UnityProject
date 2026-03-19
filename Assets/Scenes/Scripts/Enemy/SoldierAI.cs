@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections;
 
-public class ImpAI_NavMesh : MonoBehaviour
+public class SoldierAI : MonoBehaviour
 {
     [Header("References")]
     public Transform player;
@@ -12,23 +11,18 @@ public class ImpAI_NavMesh : MonoBehaviour
     public EnemyHealth enemyHealth;
 
     [Header("Vision")]
-    public float detectionDistance = 20f;
+    public float detectionDistance = 25f;
     public float visionAngle = 120f;
     public float aggroMemoryTime = 5f;
     public LayerMask obstacleMask;
 
     [Header("Ranges")]
-    public float chaseDistance = 12f;
-    public float rangedDistance = 6f;
-    public float meleeDistance = 2f;
+    public float chaseDistance = 15f;
+    public float attackDistance = 12f;
+    public int damage = 25;
 
     [Header("Attack")]
     public float attackCooldown = 2f;
-    public int meleeDamage = 15;
-
-    [Header("Ranged")]
-    public GameObject projectilePrefab;
-    public float projectileSpeed = 10f;
 
     [Header("Movement")]
     public float strafeRadius = 3f;
@@ -36,7 +30,6 @@ public class ImpAI_NavMesh : MonoBehaviour
 
     private float nextAttackTime = 0f;
     private float lastSeenTime;
-
     private NavMeshAgent agent;
     private bool hasAggro = false;
 
@@ -46,18 +39,16 @@ public class ImpAI_NavMesh : MonoBehaviour
         if (player == null)
             player = Camera.main.transform;
         if (enemyHealth == null)
-            enemyHealth = GetComponent<EnemyHealth>();
+                    enemyHealth = GetComponent<EnemyHealth>();
         agent = GetComponent<NavMeshAgent>();
     }
 
     void Update()
     {
-        int hp = enemyHealth.getCurHp();
-
-        if (hp<=0) Destroy(this);
-
+        if (enemyHealth.getCurHp()<=0) Destroy(this);
         float distance = Vector3.Distance(transform.position, player.position);
 
+        // Check if player is visible
         if (CanSeePlayer(distance))
         {
             hasAggro = true;
@@ -65,9 +56,7 @@ public class ImpAI_NavMesh : MonoBehaviour
         }
 
         if (hasAggro && Time.time - lastSeenTime > aggroMemoryTime)
-        {
             hasAggro = false;
-        }
 
         if (!hasAggro)
         {
@@ -81,47 +70,51 @@ public class ImpAI_NavMesh : MonoBehaviour
 
     bool CanSeePlayer(float distance)
     {
+        if (distance < 3f)
+            return true;
+
         if (distance > detectionDistance) return false;
 
-        Vector3 dir = (player.position - transform.position).normalized;
+        Vector3 origin = firePoint != null ? firePoint.position : transform.position + Vector3.up;
+        Vector3 dir = (player.position - origin).normalized;
 
+        // Vision cone
         float angle = Vector3.Angle(transform.forward, dir);
-        if (angle > visionAngle / 2f) return false;
+        if (angle > visionAngle * 0.5f)
+            return false;
 
-        if (Physics.Raycast(transform.position + Vector3.up, dir, out RaycastHit hit, detectionDistance, ~0))
+        // Raycast ONLY against player + obstacles
+        int mask = LayerMask.GetMask("Default", "player"); 
+
+        if (Physics.Raycast(origin, dir, out RaycastHit hit, detectionDistance, mask))
         {
-            if (hit.transform != player)
-                return false;
+            Debug.DrawLine(origin, hit.point, Color.red); // blocked
+            if (hit.transform == player)
+            {
+                Debug.Log("seen");
+                return true;
+            }
         }
 
-        return true;
+        Debug.DrawRay(origin, dir * detectionDistance, Color.yellow); // no hit
+        return false;
     }
 
     void HandleCombat(float distance)
     {
-        // Face the player
+        // Face player
         Vector3 lookDir = player.position - transform.position;
         lookDir.y = 0;
         if (lookDir != Vector3.zero)
             transform.rotation = Quaternion.LookRotation(lookDir);
 
-        // MELEE first
-        if (distance <= meleeDistance && Time.time >= nextAttackTime)
+        // ATTACK
+        if (distance <= attackDistance && Time.time >= nextAttackTime)
         {
             agent.isStopped = true;
             animator.SetState(EnemyState.Attack);
-            animator.PlayAttack();
-            DoMeleeAttack();
-            return;
-        }
-
-        // RANGED
-        if (distance <= rangedDistance && Time.time >= nextAttackTime)
-        {
-            agent.isStopped = true;
-            animator.SetState(EnemyState.Attack);
-            animator.PlayAttack();
-            DoRangedAttack();
+            
+            DoRaycastAttack();
             return;
         }
 
@@ -133,7 +126,7 @@ public class ImpAI_NavMesh : MonoBehaviour
             return;
         }
 
-        // Idle
+        // IDLE
         agent.isStopped = true;
         animator.SetState(EnemyState.Idle);
     }
@@ -148,49 +141,32 @@ public class ImpAI_NavMesh : MonoBehaviour
         agent.SetDestination(target);
     }
 
-    // Immediately sets cooldown
-void DoMeleeAttack()
-{
-    nextAttackTime = Time.time + attackCooldown;
-
-    spriteAnimator.triggerFrame = 2;
-    spriteAnimator.onTriggerFrame = () =>
+    void DoRaycastAttack()
     {
-        PlayerHealth health = player.GetComponent<PlayerHealth>();
-        if (health != null)
-            health.TakeDamage(meleeDamage);
+        animator.PlayAttack();
+        nextAttackTime = Time.time + attackCooldown;
 
-        // ✅ Only trigger once
-        spriteAnimator.onTriggerFrame = null;
-    };
-}
-
-void DoRangedAttack()
-{
-    nextAttackTime = Time.time + attackCooldown;
-
-    spriteAnimator.triggerFrame = 2;
-    spriteAnimator.onTriggerFrame = () =>
-    {
-        ShootProjectile();
-
-        // ✅ Important: clear the trigger so it only fires once
-        spriteAnimator.onTriggerFrame = null;
-    };
-}
-
-    void ShootProjectile()
-    {
-        if (projectilePrefab == null || firePoint == null) return;
-
-        GameObject projObj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-
-        Vector3 dir = (player.position - firePoint.position).normalized;
-
-        ImpProjectile proj = projObj.GetComponent<ImpProjectile>();
-        if (proj != null)
+        // Trigger animation frame for attack (optional)
+        spriteAnimator.triggerFrame = 2;
+        spriteAnimator.onTriggerFrame = () =>
         {
-            proj.Launch(dir);
-        }
+            RaycastHit hit;
+            Vector3 dir = (player.position - firePoint.position).normalized;
+
+            if (Physics.Raycast(firePoint.position, dir, out hit, attackDistance))
+            {
+                Debug.DrawLine(firePoint.position, hit.point, Color.red, 1f);
+
+                PlayerHealth health = hit.transform.GetComponent<PlayerHealth>();
+                if (health != null)
+                {
+                    health.TakeDamage(damage);
+                    Debug.Log("Soldier hit player for " + damage);
+                }
+            }
+
+            // Clear trigger so it only fires once
+            spriteAnimator.onTriggerFrame = null;
+        };
     }
 }

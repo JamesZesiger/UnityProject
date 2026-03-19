@@ -65,4 +65,6 @@ public class PlayerHealth : MonoBehaviour
 
         player.transform.rotation = targetRot;
     }
+
+    public int getCurHp(){ return currentHealth;}
 }

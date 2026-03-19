@@ -5,6 +5,7 @@ public class EnemyHealth : MonoBehaviour
     public int maxHealth = 50;
     private int currentHealth;
 
+
     [Header("Animation")]
     public EnemyAnimator animator;
 
@@ -45,14 +46,16 @@ public class EnemyHealth : MonoBehaviour
         }
 
         // Disable AI & collider so it stops interacting
-        var ai = GetComponent<ImpAI_NavMesh>();
-        if (ai != null) ai.enabled = false;
-
         var agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (agent != null) agent.isStopped = true;
 
         var col = GetComponent<Collider>();
         if (col != null) col.enabled = false;
         Destroy(this);
+    }
+
+    public int getCurHp()
+    {
+        return currentHealth;
     }
 }

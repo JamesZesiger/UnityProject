@@ -38,6 +38,11 @@ public class EnemyAnimator : MonoBehaviour
         if (isLocked) return;
         StartLockedCoroutine(PlayTemporary(hit, duration));
     }
+    public void PlayAttack(float duration = 0.5f)
+    {
+        if (isLocked) return;
+        StartLockedCoroutine(PlayTemporary(attack, duration));
+    }
 
 
     public void PlayDeath()
