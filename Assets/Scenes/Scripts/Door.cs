@@ -5,60 +5,45 @@ public class Door : InteractableObject
     [Header("Settings")]
     public float speed = 5f;
     public float moveDistance = 5f;
+    public Vector3 openDirection = Vector3.up;
+
     private bool isOpen = false;
     private bool isMoving = false;
+
     private Vector3 startPosition;
+    private Vector3 targetPosition;
 
     void Start()
     {
         startPosition = transform.position;
+
+        // Normalize direction so distance is consistent
+        openDirection = openDirection.normalized;
     }
 
-    private void Update() 
+    void Update()
     {
-        if (isOpen && isMoving)
-            MoveDoor(startPosition.y, false); 
-        if (!isOpen && isMoving)
-            MoveDoor(startPosition.y + moveDistance, true);
+        if (!isMoving) return;
 
-    }
-    protected override void Interact()
-    {
-        if (isOpen)
-        {
-            isMoving = true;  
-        }
-        else if (!isOpen)
-        {
-            isMoving = true;  
-        }
-    }
+        Vector3 target = isOpen ? startPosition : startPosition + openDirection * moveDistance;
 
-    void MoveDoor(float targetY, bool openState)
-    {
-        float newY = Mathf.MoveTowards(
-            transform.position.y,
-            targetY,
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            target,
             speed * Time.deltaTime
         );
 
-        transform.position = new Vector3(
-            transform.position.x,
-            newY,
-            transform.position.z
-        );
-
-        if (Mathf.Approximately(transform.position.y, targetY))
+        if (Vector3.Distance(transform.position, target) < 0.01f)
         {
-            transform.position = new Vector3(
-                transform.position.x,
-                targetY,
-                transform.position.z
-            );
-
+            transform.position = target;
             isMoving = false;
-            isOpen = openState;
+            isOpen = !isOpen;
         }
     }
 
+    protected override void Interact()
+    {
+        if (!isMoving)
+            isMoving = true;
+    }
 }

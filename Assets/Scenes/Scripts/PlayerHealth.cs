@@ -7,12 +7,16 @@ public class PlayerHealth : MonoBehaviour
 
     public GameObject player;
     private PlayerController controller;
+    public PlayerHUD playerHUD;
 
     private bool canTakeDamage = true;
     void Awake()
     {
         currentHealth = maxHealth;
         controller = GetComponentInChildren<PlayerController>();
+        playerHUD = GetComponentInChildren<PlayerHUD>();
+        playerHUD.SetHealth(currentHealth);
+        Debug.Log("set health");
     }
 
     // Update is called once per frame
@@ -26,6 +30,8 @@ public class PlayerHealth : MonoBehaviour
             {
                 Die();
             }
+            playerHUD.SetHealth(currentHealth);
+            
         }
     }
 
