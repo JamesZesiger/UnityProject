@@ -14,7 +14,6 @@ public class Rifle : HitscanGun
     public bool isReloading = false;
 
     public AudioClip shot;
-    public AudioClip hitSound;
     public AudioSource audioSource;
     void Awake()
     {
@@ -38,7 +37,6 @@ public class Rifle : HitscanGun
             hitPoint = hit.point;
 
             Debug.Log("Rife hit " + hit.collider.name);
-            audioSource.PlayOneShot(hitSound, 1.0f);
             EnemyHealth health = hit.collider.GetComponentInParent<EnemyHealth>();
             if (health != null)
             {

@@ -1,9 +1,13 @@
 using UnityEngine;
+using System;
 
 public class SpriteAnimator : MonoBehaviour
 {
     public Sprite[] frames;
     public float fps = 8f;
+
+    public int triggerFrame = -1;
+    public Action onTriggerFrame;
 
     int index;
     float timer;
@@ -16,21 +20,28 @@ public class SpriteAnimator : MonoBehaviour
 
     void Update()
     {
-        if(frames.Length == 0) return;
+        if (frames.Length == 0) return;
 
         timer += Time.deltaTime;
 
-        if(timer >= 1f / fps)
+        if (timer >= 1f / fps)
         {
             timer = 0f;
 
-            index = (index + 1) % frames.Length; // loops animation
+            index = (index + 1) % frames.Length;
             sr.sprite = frames[index];
+
+            // 🎯 Frame event trigger
+            if (index == triggerFrame)
+            {
+                onTriggerFrame?.Invoke();
+            }
         }
     }
+
     public void SetFrames(Sprite[] newFrames)
     {
-        if(frames == newFrames) return;
+        if (frames == newFrames) return;
 
         frames = newFrames;
         index = 0;

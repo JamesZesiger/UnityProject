@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 591631009882855554}
   - component: {fileID: 1216616541383142555}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Audio Source
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,7 +138,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7810499870653795661}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -219,6 +219,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 367a2ab42518bbe478aaaff21c57d7d5, type: 3}
       propertyPath: m_Name
       value: shotgun_001
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 367a2ab42518bbe478aaaff21c57d7d5, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -357,6 +361,10 @@ PrefabInstance:
     - target: {fileID: 8723140022207642106, guid: 91917936023d8d44698236efd68648ff, type: 3}
       propertyPath: m_Name
       value: shotgun_handguard_001
+      objectReference: {fileID: 0}
+    - target: {fileID: 8723140022207642106, guid: 91917936023d8d44698236efd68648ff, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
