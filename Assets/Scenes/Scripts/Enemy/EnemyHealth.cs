@@ -4,8 +4,10 @@ public class EnemyHealth : MonoBehaviour
 {
     public int maxHealth = 50;
     private int currentHealth;
-
-
+    public AudioSource audioSource;
+    public AudioClip hit;
+    public AudioClip death;
+    public float volume = 1f;
     [Header("Animation")]
     public EnemyAnimator animator;
 
@@ -20,7 +22,7 @@ public class EnemyHealth : MonoBehaviour
     public void TakeDamage(int amount, Vector3 hitPosition)
     {
         currentHealth -= amount;
-        Debug.Log($"{name} took {amount} damage! ({currentHealth}/{maxHealth})");
+        audioSource.PlayOneShot(hit, volume);
 
         // Direction relative to enemy
         Vector3 localHitDir = transform.InverseTransformDirection(
@@ -38,13 +40,12 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log($"{name} died!");
 
         if (animator != null)
         {
             animator.PlayDeath();
         }
-
+        audioSource.PlayOneShot(death, volume);
         // Disable AI & collider so it stops interacting
         var agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (agent != null) agent.isStopped = true;

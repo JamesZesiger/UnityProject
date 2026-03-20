@@ -129,7 +129,6 @@ public class PlayerController : MonoBehaviour
     void OnSprint(InputValue value)
     {
         isSprinting = value.isPressed;
-        Debug.Log("Sprint: " + isSprinting);
     }
 
     void OnJump(InputValue value)
@@ -169,7 +168,6 @@ public class PlayerController : MonoBehaviour
             {
                 InteractableObject targetObject = hit.collider.GetComponentInParent<InteractableObject>();
                 targetObject.TryInteract();
-                Debug.Log("Interacted with:" + targetObject);
             }
         }
     }

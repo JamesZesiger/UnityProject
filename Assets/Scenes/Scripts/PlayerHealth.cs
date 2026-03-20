@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 public class PlayerHealth : MonoBehaviour
 {
@@ -9,6 +10,16 @@ public class PlayerHealth : MonoBehaviour
     private PlayerController controller;
     public PlayerHUD playerHUD;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip hit;
+    public AudioClip die;
+    public float volume = 1f;
+
+    [Header("Damage Overlay")]
+    public Image damageOverlay;
+    public float flashDuration = 0.4f;
+    public float flashAlpha = 0.4f;
     private bool canTakeDamage = true;
     void Awake()
     {
@@ -16,7 +27,6 @@ public class PlayerHealth : MonoBehaviour
         controller = GetComponentInChildren<PlayerController>();
         playerHUD = GetComponentInChildren<PlayerHUD>();
         playerHUD.SetHealth(currentHealth);
-        Debug.Log("set health");
     }
 
     // Update is called once per frame
@@ -24,12 +34,16 @@ public class PlayerHealth : MonoBehaviour
     {
         if (canTakeDamage)
         {
+            
             currentHealth -= amount;
-
+            audioSource.PlayOneShot(hit, volume);
             if (currentHealth <= 0)
             {
                 Die();
             }
+            else if (amount>0)
+                StartCoroutine(DamageFlash());
+            
             playerHUD.SetHealth(currentHealth);
             
         }
@@ -38,10 +52,13 @@ public class PlayerHealth : MonoBehaviour
     void Die()
     {
         canTakeDamage = false;
-        Debug.Log("Player died");
-
+        audioSource.PlayOneShot(die, volume);
         if (controller != null)
             controller.enabled = false;
+
+        Color color = damageOverlay.color;
+        color.a = 0.6f;
+        damageOverlay.color = color;
 
         StartCoroutine(FallOver());
     }
@@ -66,5 +83,17 @@ public class PlayerHealth : MonoBehaviour
         player.transform.rotation = targetRot;
     }
 
+
+    private IEnumerator DamageFlash()
+    {
+        Color color = damageOverlay.color;
+        color.a = flashAlpha;
+        damageOverlay.color = color;
+
+        yield return new WaitForSeconds(flashDuration);
+
+        color.a = 0f;
+        damageOverlay.color = color;
+    }
     public int getCurHp(){ return currentHealth;}
 }

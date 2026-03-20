@@ -303,8 +303,7 @@ MonoBehaviour:
   reloadAngle: -45
   reloadDuration: 3
   isReloading: 0
-  shot: {fileID: 8300000, guid: b04cca1d87e048a49969e7b5f02cad09, type: 3}
-  hitSound: {fileID: 8300000, guid: b76375b388405624587d0e2e07fbf90c, type: 3}
+  shot: {fileID: 8300000, guid: bbd82cb2c7197f141b7ecace46adcfa8, type: 3}
   audioSource: {fileID: 1216616541383142555}
 --- !u!1001 &5401259046310801131
 PrefabInstance:

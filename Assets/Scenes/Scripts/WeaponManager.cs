@@ -22,7 +22,6 @@ public class WeaponManager : MonoBehaviour
 
         currentGun = gun.GetComponent<Gun>();
         if(currentGun == null)
-        Debug.LogError("Gun component missing on prefab!");
 
         if(playerHUD != null)
             playerHUD.SetGun(currentGun); // update HUD to current weapon

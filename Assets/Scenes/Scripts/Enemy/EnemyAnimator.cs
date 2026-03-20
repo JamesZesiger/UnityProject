@@ -47,7 +47,6 @@ public class EnemyAnimator : MonoBehaviour
 
     public void PlayDeath()
     {
-        Debug.Log("Death");
         // Death overrides everything
         StopCurrentCoroutine();
         StartLockedCoroutine(PlayLocked(death));
@@ -107,7 +106,6 @@ public class EnemyAnimator : MonoBehaviour
 
         // Lock to last frame
         Sprite[]dead = new Sprite[] {frames[frames.Length - 1]};
-        Debug.Log(dead.Length);
         spriteAnimator.SetFrames(dead);
 
         // Keep locked

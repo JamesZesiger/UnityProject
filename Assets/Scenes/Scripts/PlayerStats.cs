@@ -16,7 +16,6 @@ public class PlayerStats : MonoBehaviour
         if (hpComponent.getCurHp() >= maxHealth) return false;
 
         hpComponent.TakeDamage(-amount);
-        Debug.Log("Picked up health: " + amount);
         return true;
     }
 
@@ -25,7 +24,6 @@ public class PlayerStats : MonoBehaviour
         if (ammo >= maxAmmo) return false;
 
         ammo = Mathf.Min(ammo + amount, maxAmmo);
-        Debug.Log("Picked up ammo: " + amount);
         return true;
     }
 
@@ -34,7 +32,6 @@ public class PlayerStats : MonoBehaviour
         if (armor >= maxArmor) return false;
 
         armor = Mathf.Min(armor + amount, maxArmor);
-        Debug.Log("Picked up armor: " + amount);
         return true;
     }
 }

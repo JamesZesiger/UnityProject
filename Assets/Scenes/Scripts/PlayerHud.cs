@@ -29,7 +29,6 @@ public class PlayerHUD : MonoBehaviour
 
     public void SetHealth(int hp)
     {
-        Debug.Log("hp set");
         this.hp = hp;
     }
 }

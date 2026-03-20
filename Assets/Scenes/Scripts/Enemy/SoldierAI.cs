@@ -33,6 +33,11 @@ public class SoldierAI : MonoBehaviour
     private NavMeshAgent agent;
     private bool hasAggro = false;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip attack;
+    public float volume = 1f;
+
 
     void Awake()
     {
@@ -45,7 +50,11 @@ public class SoldierAI : MonoBehaviour
 
     void Update()
     {
-        if (enemyHealth.getCurHp()<=0) Destroy(this);
+        if (enemyHealth.getCurHp() <= 0)
+        {
+            Destroy(agent);
+            Destroy(this);
+        }
         float distance = Vector3.Distance(transform.position, player.position);
 
         // Check if player is visible
@@ -91,7 +100,6 @@ public class SoldierAI : MonoBehaviour
             Debug.DrawLine(origin, hit.point, Color.red); // blocked
             if (hit.transform == player)
             {
-                Debug.Log("seen");
                 return true;
             }
         }
@@ -113,7 +121,7 @@ public class SoldierAI : MonoBehaviour
         {
             agent.isStopped = true;
             animator.SetState(EnemyState.Attack);
-            
+            audioSource.PlayOneShot(attack, volume);
             DoRaycastAttack();
             return;
         }
@@ -161,7 +169,6 @@ public class SoldierAI : MonoBehaviour
                 if (health != null)
                 {
                     health.TakeDamage(damage);
-                    Debug.Log("Soldier hit player for " + damage);
                 }
             }
 
